@@ -1,13 +1,16 @@
 package com.openhack.serverlist.client;
 
-import io.fabric8.kubernetes.api.model.Pod;
-import io.fabric8.kubernetes.api.model.PodBuilder;
-import io.fabric8.kubernetes.api.model.PodList;
-import io.fabric8.kubernetes.api.model.ServiceList;
+import io.fabric8.kubernetes.api.model.*;
+import io.fabric8.kubernetes.api.model.storage.StorageClassList;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
 
+import io.kubernetes.client.proto.V1Storage;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class ClientAPI {
@@ -18,10 +21,15 @@ public class ClientAPI {
         client = new DefaultKubernetesClient();
     }
 
-    public Pod createPod(String namespace, String podName) {
-        Pod pod = client.pods().inNamespace(namespace)
-                .create(new PodBuilder().withNewMetadata().withName(podName).endMetadata().build());
-        return pod;
+    public Pod createPod(String namespace, Integer n) {
+
+        Integer total = client.apps().statefulSets().inNamespace(namespace).withName("minecraft").get().getSpec().getReplicas();
+
+        client.apps().statefulSets()
+                .inNamespace(namespace)
+                .withName("minecraft").scale((total + n), true);
+
+        return null;
     }
 
     public PodList listPod(String namespace) {

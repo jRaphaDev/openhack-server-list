@@ -1,6 +1,7 @@
 package com.openhack.serverlist.controller;
 
 import com.openhack.serverlist.model.Instance;
+import com.openhack.serverlist.model.InstanceReplica;
 import com.openhack.serverlist.service.InstanceService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +17,9 @@ public class InstanceController {
     InstanceService instanceService;
 
     @PostMapping("/instance")
-    public String create() {
-        instanceService.create();
+    public String create(@RequestBody() InstanceReplica instanceReplica) {
+        System.out.println("testing");
+        instanceService.create(instanceReplica.getNumber());
         return "ok";
     }
 

@@ -22,8 +22,8 @@ public class InstanceService {
 
     private InstanceService() {}
 
-    public Pod create() {
-        return client.createPod(NAMESPACE, NAMESPACE);
+    public Pod create(int x) {
+        return client.createPod(NAMESPACE, x);
     }
 
     public List<Instance> findall() {
