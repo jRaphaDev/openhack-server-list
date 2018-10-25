@@ -3,8 +3,10 @@ package com.openhack.serverlist.client;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.PodBuilder;
 import io.fabric8.kubernetes.api.model.PodList;
+import io.fabric8.kubernetes.api.model.ServiceList;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
+
 import org.springframework.stereotype.Service;
 
 @Service
@@ -23,11 +25,11 @@ public class ClientAPI {
     }
 
     public PodList listPod(String namespace) {
-        PodList podList = client.pods().inNamespace(namespace).list();
-        for (Pod item : podList.getItems()) {
+        PodList list = client.pods().inNamespace(namespace).list();
+        for (Pod item : list.getItems()) {
             System.out.println(item.getMetadata().getName());
         }
-        return podList;
+        return list;
     }
 
     public boolean deletePod(String namespace, String pod){
@@ -35,7 +37,12 @@ public class ClientAPI {
                 .withName(pod).delete();
     }
 
-    public void listServer() {}
-
+    public ServiceList listServer(String namespace) {
+        ServiceList list = client.services().inNamespace(namespace).list();
+        for (io.fabric8.kubernetes.api.model.Service service: list.getItems()) {
+            System.out.println(service.getMetadata().getName());
+        }
+        return list;
+    }
 
 }

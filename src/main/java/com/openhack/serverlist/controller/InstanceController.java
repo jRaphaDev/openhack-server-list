@@ -1,10 +1,13 @@
 package com.openhack.serverlist.controller;
 
+import com.openhack.serverlist.model.Instance;
 import com.openhack.serverlist.service.InstanceService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController()
 public class InstanceController {
@@ -19,9 +22,8 @@ public class InstanceController {
     }
 
     @GetMapping("/instance")
-    public String findAll() {
-        instanceService.findall();
-        return "ok";
+    public List<Instance> findAll() {
+        return instanceService.findall();
     }
 
     @DeleteMapping("/instance/{instance}")
