@@ -1,11 +1,7 @@
 FROM openjdk:8
 
-VOLUME /tmp
-
-ARG JAR_FILE
+ADD target/server-list-1.0.0.jar server-list-1.0.0.jar
 
 EXPOSE 8080
 
-COPY ${JAR_FILE} app.jar
-
-ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]
+ENTRYPOINT ["java", "-jar", "server-list-1.0.0.jar"]
