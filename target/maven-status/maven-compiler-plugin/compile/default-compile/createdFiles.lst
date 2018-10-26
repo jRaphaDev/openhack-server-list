@@ -1,0 +1,4 @@
+com/openhack/serverlist/ServerListApplication.class
+com/openhack/serverlist/service/InstanceService.class
+com/openhack/serverlist/model/Server.class
+com/openhack/serverlist/controller/InstanceController.class

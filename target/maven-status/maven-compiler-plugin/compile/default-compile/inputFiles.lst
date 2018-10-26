@@ -1,0 +1,11 @@
+/Users/freitas/Documents/Hackthons/openhack-kubernetes/server-list/src/main/java/com/openhack/serverlist/model/Instance.java
+/Users/freitas/Documents/Hackthons/openhack-kubernetes/server-list/src/main/java/com/openhack/serverlist/service/ServerService.java
+/Users/freitas/Documents/Hackthons/openhack-kubernetes/server-list/src/main/java/com/openhack/serverlist/config/CorsConfig.java
+/Users/freitas/Documents/Hackthons/openhack-kubernetes/server-list/src/main/java/com/openhack/serverlist/model/InstanceReplica.java
+/Users/freitas/Documents/Hackthons/openhack-kubernetes/server-list/src/main/java/com/openhack/serverlist/controller/InstanceController.java
+/Users/freitas/Documents/Hackthons/openhack-kubernetes/server-list/src/main/java/com/openhack/serverlist/model/Endpoint.java
+/Users/freitas/Documents/Hackthons/openhack-kubernetes/server-list/src/main/java/com/openhack/serverlist/controller/ServerController.java
+/Users/freitas/Documents/Hackthons/openhack-kubernetes/server-list/src/main/java/com/openhack/serverlist/client/ClientAPI.java
+/Users/freitas/Documents/Hackthons/openhack-kubernetes/server-list/src/main/java/com/openhack/serverlist/model/Server.java
+/Users/freitas/Documents/Hackthons/openhack-kubernetes/server-list/src/main/java/com/openhack/serverlist/ServerListApplication.java
+/Users/freitas/Documents/Hackthons/openhack-kubernetes/server-list/src/main/java/com/openhack/serverlist/service/InstanceService.java
