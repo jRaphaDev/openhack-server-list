@@ -48,9 +48,17 @@ public class ClientAPI {
         return list;
     }
 
-    public boolean deletePod(String namespace, String pod){
-        return client.pods().inNamespace(namespace)
-                .withName(pod).delete();
+    public Pod deletePod(String namespace){
+        Integer total = client.apps()
+                .statefulSets().inNamespace(namespace)
+                .withName("minecraft").get()
+                .getSpec().getReplicas();
+
+        client.apps().statefulSets()
+                .inNamespace(namespace)
+                .withName("minecraft").delete();
+
+        return null;
     }
 
     public ServiceList listServer(String namespace) {

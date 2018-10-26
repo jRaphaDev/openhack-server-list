@@ -40,8 +40,8 @@ public class InstanceService {
         return instances;
     }
 
-    public boolean delete(String pod){
-        return client.deletePod(NAMESPACE, pod);
+    public Pod delete(){
+        return client.deletePod(NAMESPACE);
     }
 
 

@@ -28,9 +28,9 @@ public class InstanceController {
         return instanceService.findall();
     }
 
-    @DeleteMapping("/instance/{instance}")
-    public String delete(@PathVariable("instance") String pod) {
-        instanceService.delete(pod);
+    @DeleteMapping("/instance")
+    public String delete() {
+        instanceService.delete();
         return "ok";
     }
 

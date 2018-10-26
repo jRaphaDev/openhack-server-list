@@ -76,6 +76,30 @@
 					</buildArgs>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>com.microsoft.azure</groupId>
+				<artifactId>azure-webapp-maven-plugin</artifactId>
+				<version>1.4.0</version>
+				<configuration>
+					<deploymentType>jar</deploymentType>
+
+					<!-- configure app to run on port 80, required by App Service -->
+					<appSettings>
+						<property>
+							<name>JAVA_OPTS</name>
+							<value>-Dserver.port=8080</value>
+						</property>
+					</appSettings>
+
+					<!-- Web App information -->
+					<resourceGroup>rg_rip</resourceGroup>
+					<appName>server-list</appName>
+					<region>westus2</region>
+
+					<!-- Java Runtime Stack for Web App on Linux-->
+					<linuxRuntime>jre8</linuxRuntime>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 
