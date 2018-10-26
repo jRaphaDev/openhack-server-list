@@ -30,12 +30,11 @@ public class ClientAPI {
 
         Integer total = client.apps()
                 .statefulSets().inNamespace(namespace)
-                .withName("minecraft").get()
-                .getSpec().getReplicas();
+                .withName("minecraft97b974b2-cb21-4454-a9c9-c69187049493").get().getSpec().getReplicas();
 
         client.apps().statefulSets()
                 .inNamespace(namespace)
-                .withName("minecraft").scale((total + n), true);
+                .withName("minecraft97b974b2-cb21-4454-a9c9-c69187049493").scale((total + n), true);
 
         return null;
     }
@@ -51,12 +50,12 @@ public class ClientAPI {
     public Pod deletePod(String namespace){
         Integer total = client.apps()
                 .statefulSets().inNamespace(namespace)
-                .withName("minecraft").get()
+                .withName("minecraft97b974b2-cb21-4454-a9c9-c69187049493").get()
                 .getSpec().getReplicas();
 
         client.apps().statefulSets()
                 .inNamespace(namespace)
-                .withName("minecraft").delete();
+                .withName("minecraft97b974b2-cb21-4454-a9c9-c69187049493").delete();
 
         return null;
     }
