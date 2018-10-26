@@ -33,14 +33,14 @@ public class ServerService {
 
             Server server = new Server(service.getMetadata().getName());
 
-            if ( service.getSpec().getType().compareTo("LoadBalancer") == 0) {
+            if ( service.getSpec().getType().compareTo("LoadBalancer") == 0 && !service.getStatus().getLoadBalancer().getIngress().isEmpty()) {
                 for (ServicePort porta : service.getSpec().getPorts()) {
 
-                    if (porta.getName().compareTo("http") == 0) {
+                    if (porta.getName().compareTo("http") == 0 ) {
                         server.addEndpoint("minecraft", service.getStatus().getLoadBalancer().getIngress().get(0).getIp() + ":" + porta.getPort());
                     }
 
-                    if (porta.getName().compareTo("https") == 0) {
+                    if (porta.getName().compareTo("https") == 0 ) {
                         server.addEndpoint("rcon", service.getStatus().getLoadBalancer().getIngress().get(0).getIp() + ":" + porta.getPort());
                     }
                 }
@@ -58,13 +58,29 @@ public class ServerService {
         UUID uuid = UUID.randomUUID();
 
         String serviceName = "minecraft";
-        serviceName.concat(uuid.toString());
+        serviceName = serviceName.concat(uuid.toString());
 
 
         client.createService(NAMESPACE, serviceName);
+        
+        client.createStatefulSet(NAMESPACE, serviceName);
+        
     }
 
     public boolean deleteService(String serverName) {
-        return client.deleteService(NAMESPACE, serverName);
+        if ( client.deleteService(NAMESPACE, serverName) ){
+        	if (client.deleteStatefulSet(NAMESPACE, serverName)) {
+        		if (client.deletePersistentVolumeClaims(NAMESPACE, serverName)){
+        			return true;
+        		} else {
+        			System.out.println("Erro ao apagar PersistentVolume");
+        		}
+        	} else {
+        		System.out.println("Erro ao apagar StatefulSet. Recriando Service...");
+        		//client.createService(NAMESPACE, serverName);
+        	}
+        } 
+        return false;
     }
+    
 }

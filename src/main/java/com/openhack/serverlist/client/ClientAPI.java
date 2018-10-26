@@ -1,6 +1,8 @@
 package com.openhack.serverlist.client;
 
 import io.fabric8.kubernetes.api.model.*;
+import io.fabric8.kubernetes.api.model.apps.StatefulSet;
+import io.fabric8.kubernetes.api.model.apps.StatefulSetBuilder;
 import io.fabric8.kubernetes.api.model.storage.StorageClassList;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
@@ -13,7 +15,11 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -65,36 +71,36 @@ public class ClientAPI {
 
         io.fabric8.kubernetes.api.model.Service service = client.services().inNamespace(namespace).createNew()
                 .withNewMetadata()
-                .withGenerateName(serviceName)
+                	.withName(serviceName)
                 .endMetadata()
                 .withNewSpec()
-                .addNewPort()
-                .withProtocol("TCP")
-                .withPort(80)
-                .withName("tcp80")
-                .withNewTargetPort(25565)
-                .endPort()
-                .addNewPort()
-                .withProtocol("TCP")
-                .withPort(443)
-                .withName("ssh")
-                .withNewTargetPort(25575)
-                .endPort()
-                .addNewPort()
-                .withProtocol("TCP")
-                .withPort(25565)
-                .withName("http")
-                .withNewTargetPort(25565)
-                .endPort()
-                .addNewPort()
-                .withProtocol("TCP")
-                .withPort(25575)
-                .withName("https")
-                .withNewTargetPort(25575)
-                .endPort()
-                .addToSelector("pod-name", serviceName)
-                .withType("LoadBalancer")
-                .withSessionAffinity("ClientIP")
+                	.addNewPort()
+                		.withProtocol("TCP")
+                		.withPort(80)
+		                .withName("tcp80")
+		                .withNewTargetPort(25565)
+	                .endPort()
+	                .addNewPort()
+		                .withProtocol("TCP")
+		                .withPort(443)
+		                .withName("ssh")
+		                .withNewTargetPort(25575)
+	                .endPort()
+	                .addNewPort()
+		                .withProtocol("TCP")
+		                .withPort(25565)
+		                .withName("http")
+		                .withNewTargetPort(25565)
+	                .endPort()
+	                .addNewPort()
+		                .withProtocol("TCP")
+		                .withPort(25575)
+		                .withName("https")
+		                .withNewTargetPort(25575)
+	                .endPort()
+	                .addToSelector("pod-name", serviceName)
+	                .withType("LoadBalancer")
+	                .withSessionAffinity("ClientIP")
                 .endSpec()
                 .done();
 
@@ -113,43 +119,66 @@ public class ClientAPI {
 
     }
 
-    public void createPodService(String namespace, String serviceName) {
-
-        String fileName = "/resource/podopenhack";
-
-        File file = new File(fileName);
-        if (!file.exists() || !file.isFile()) {
-            System.err.println("File does not exist: " + fileName);
-            return;
-        }
-
-        List<HasMetadata> resources;
-        try {
-            resources = client.load(new FileInputStream(fileName)).get();
-
-            if (resources.isEmpty()) {
-                System.err.println("No resources loaded from file: " +fileName);
-                return;
-            }
-
-            HasMetadata resource = resources.get(0);
-
-            if (resource instanceof Pod) {
-                Pod pod = (Pod) resource;
-                System.out.println("Creating pod in namespace " + namespace);
-                NonNamespaceOperation<Pod, PodList, DoneablePod, PodResource<Pod, DoneablePod>> pods = client.pods().inNamespace(namespace);
-
-                Pod result = pods.create(pod);
-                System.out.println("Created pod " + result.getMetadata().getName());
-                return;
-            } else {
-                System.err.println("Loaded resource is not a Pod! " + resource);
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-
+    public StatefulSet createStatefulSet(String namespace, String serviceName) {
+    	
+    	
+    	StatefulSet ss1 = new StatefulSetBuilder()
+    			.withNewMetadata()
+    				.withName(serviceName)
+    			.endMetadata()
+    			.withNewSpec()
+    				.withServiceName(serviceName)
+    				.withReplicas(1)
+    				.withNewSelector()
+    					.withMatchLabels(Collections.singletonMap("pod-name", serviceName))
+    				.endSelector()
+    				.withNewTemplate()
+    					.withNewMetadata()
+    						.addToLabels("pod-name", serviceName)
+    					.endMetadata()
+    					.withNewSpec()
+    						.withHostname(serviceName)
+    						.addNewContainer()
+    							.withName(serviceName)
+    							.withImage("openhack/minecraft-server:2.0")
+    							.addNewVolumeMount()
+    								.withMountPath("/data")
+    								.withName("mcdata")
+    							.endVolumeMount()
+    							.addNewPort()
+    								.withContainerPort(25565)
+    								.withContainerPort(25575)
+    							.endPort()
+    							.addNewEnv()
+    								.withName("EULA")
+    								.withValue("TRUE")
+    							.endEnv()
+    						.endContainer()
+    					.endSpec()
+    				.endTemplate()
+    				.addNewVolumeClaimTemplate()
+    					.withNewMetadata()
+    						.withName("mcdata")
+    					.endMetadata()
+    					.withNewSpec()
+    						.withAccessModes("ReadWriteOnce")
+    						.withStorageClassName("scminecraft")
+    						.withNewResources()
+    							.addToRequests("storage", new Quantity("5Gi"))
+    						.endResources()
+    					.endSpec()
+    				.endVolumeClaimTemplate()
+    			.endSpec()
+    			.build();
+    	
+    	return client.apps().statefulSets().inNamespace(namespace).create(ss1);
     }
 
-
+    public boolean deleteStatefulSet(String namespace, String statefulSetName) {
+    	return client.apps().statefulSets().inNamespace(namespace).withName(statefulSetName).delete();
+    }
+    
+    public boolean deletePersistentVolumeClaims(String namespace, String statefulSetName) {
+    	return client.persistentVolumeClaims().inNamespace(namespace).withLabel("volume-pod", statefulSetName).delete();
+    }
 }

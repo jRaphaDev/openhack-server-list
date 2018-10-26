@@ -26,7 +26,10 @@ public class ServerController {
 
     @DeleteMapping("/server/{serverName}")
     public String deleteServer(@PathVariable String serverName) {
-        serverService.deleteService(serverName);
-        return "ok";
+       if ( serverService.deleteService(serverName) ) {
+    	   return "ok";
+       }
+       return "Erro ao deletar server";
+        
     }
 }
